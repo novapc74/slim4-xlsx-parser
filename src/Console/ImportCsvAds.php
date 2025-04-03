@@ -2,7 +2,9 @@
 
 namespace App\Console;
 
+use App\Service\ClearOldData;
 use Exception;
+use App\Models\Ads;
 use Psr\Log\LoggerInterface;
 use App\Service\XlsFileManager;
 use App\Service\SingleUpdateService;
@@ -57,10 +59,13 @@ class ImportCsvAds extends Command
             ? MultiplyUpdateService::init($this->logger, $rows)->execute()
             : SingleUpdateService::init($this->logger, $rows)->execute();
 
+        ClearOldData::init($this->logger, $rows)->clearOldData();
+
         return $success
             ? ($io->success('Похоже на то, что все OK!') && Command::SUCCESS)
             : ($io->error('Самое время посмотреть логи!') && Command::FAILURE);
     }
+
 
     public static function showCommandTitle(SymfonyStyle $io, string $mode): void
     {

@@ -14,23 +14,33 @@ class AdsAdset extends Model
         'name',
     ];
 
-    public static function findOne(int $id): Model|null
-    {
-        return self::query()->find($id);
-    }
 
     public static function createGroup(array $data): Model
     {
         return self::create($data);
     }
 
-    public function updateGroup(array $data): bool
+    public static function deleteCollection(int|array $id): bool
     {
-        return $this->update($data);
+        if (!is_array($id)) {
+            $id = [$id];
+        }
+
+        return self::destroy($id);
     }
 
     public static function updateMultiple(array $collection): bool
     {
         return self::upsert($collection, ['id'], ['name']);
+    }
+
+    public static function findOne(int $id): Model|null
+    {
+        return self::query()->find($id);
+    }
+
+    public static function updateGroup(array $data): bool
+    {
+        return self::updateMultiple($data);
     }
 }

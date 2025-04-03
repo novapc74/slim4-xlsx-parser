@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @mixin Builder
@@ -25,15 +24,22 @@ class Ads extends Model
         'group_id',
     ];
 
-    public static function findOne(int $id): Model|null
+    public static function findOneBy(array $criteria): Model|null
     {
-        return self::query()->find($id)?->getModel();
+        foreach ($criteria as $key => $value) {
+            self::query()->where($key, $value);
+        }
+
+        return self::query()->get()->first();
     }
 
-
-    public static function createAd(array $data): Model
+    public static function deleteAds(int|array $id): bool
     {
-        return self::create($data);
+        if (!is_array($id)) {
+            $id = [$id];
+        }
+
+        return self::destroy($id);
     }
 
     public static function updateMultiple(array $collection): bool
@@ -49,35 +55,8 @@ class Ads extends Model
             ]);
     }
 
-    public function updateAd(array $data): bool
+    public static function updateAds(array $data): bool
     {
-        return $this->update($data);
-    }
-
-
-    public function setCompany(Model $company): static
-    {
-        $this->company_id = $company->id;
-        $this->save();
-
-        return $this;
-    }
-
-    public function setGroup(Model $group): static
-    {
-        $this->group_id = $group->id;
-        $this->save();
-
-        return $this;
-    }
-
-    public function group(): BelongsTo
-    {
-        return $this->belongsTo(AdsAdset::class);
-    }
-
-    public function company(): BelongsTo
-    {
-        return $this->belongsTo(AdsCampaign::class);
+        return self::updateMultiple([$data]);
     }
 }

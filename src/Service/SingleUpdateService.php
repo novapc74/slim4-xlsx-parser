@@ -9,7 +9,6 @@ use App\Models\AdsAdset;
 use App\Models\AdsCampaign;
 use Psr\Log\LoggerInterface;
 use App\Request\XlsxValidator;
-use Illuminate\Database\Eloquent\Model;
 
 class SingleUpdateService
 {
@@ -52,41 +51,52 @@ class SingleUpdateService
     {
         $adsData = $data->getAdvertisements();
 
-        $company = self::getRelation(AdsCampaign::class, $data->getCompany());
-        $group = self::getRelation(AdsAdset::class, $data->getGroup());
+        self::createOrUpdateCompany($data);
+        self::createOrUpdateGroup($data);
 
-        if ($ads = Ads::findOne($adsData['id'])) {
-            $ads->updateAd($adsData);
-            $ads->setCompany($company);
-            $ads->setGroup($group);
-
-            $ads->save();
+        if ($ads = Ads::findOneBy(['id' => $adsData['id'], 'updated_at' => $adsData['updated_at']])) {
+            Ads::updateAds($adsData);
 
             $this->logger->info('Обновили объявление с ID ' . $ads->id);
             return;
         }
 
-        $ads = Ads::createAd($adsData);
-        $ads->setCompany($company);
-        $ads->setGroup($group);
+        Ads::updateMultiple($adsData);
 
-        $ads->save();
+        $this->logger->info('Создали объявление с ID ' . $adsData['id']);
+    }
 
-        $this->logger->info('Создали объявление с ID ' . $ads->id);
+    private function createOrUpdateCompany(XlsxDto $data): void
+    {
+        $companyData = $data->getCompany();
+        if ($company = AdsCampaign::findOne($companyData['id'])) {
+
+            AdsCampaign::updateCompany($companyData);
+            $this->logger->info(sprintf('Обновили компанию с ID: %s', $company->id));
+
+            return;
+        }
+
+        $newCompany = AdsCampaign::createCompany($companyData);
+
+        $this->logger->info(sprintf('Создали компанию с ID: %s', $newCompany->id));
     }
 
 
-    private function getRelation(string $class, array $data): Model
+    private function createOrUpdateGroup(XlsxDto $data): void
     {
-        if (!$relation = $class::findOne($data['id'])) {
-            $this->logger->info(sprintf('Создаем %s с ID: %s', $class, $data['id']));
+        $groupData = $data->getGroup();
+        if ($group = AdsAdset::findOne($groupData['id'])) {
 
-            return $class::create($data);
+            /* для меня логичнее так: $group->update($groupData) */
+            AdsAdset::updateGroup($groupData);
+            $this->logger->info(sprintf('Обновили группу с ID: %s', $group->id));
+
+            return;
         }
 
-        $relation->update($data);
+        $newGroup = AdsAdset::createGroup($groupData);
 
-        $this->logger->info(sprintf('Обновили %s с ID: %s', $class, $relation->id));
-        return $relation;
+        $this->logger->info(sprintf('Создали группу с ID: %s', $newGroup->id));
     }
 }

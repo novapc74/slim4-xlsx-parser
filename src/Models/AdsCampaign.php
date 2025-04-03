@@ -18,6 +18,15 @@ class AdsCampaign extends Model
     {
         return self::upsert($collection, ['id'], ['name']);
     }
+    public static function deleteCollection(int|array $id): bool
+    {
+        if (!is_array($id)) {
+            $id = [$id];
+        }
+
+        return self::destroy($id);
+    }
+
 
     public static function findOne(int $id): Model|null
     {
@@ -29,8 +38,8 @@ class AdsCampaign extends Model
         return self::create($data);
     }
 
-    public function updateCompany(array $data): bool
+    public static function updateCompany(array $data): bool
     {
-        return $this->update($data);
+        return self::updateMultiple($data);
     }
 }
