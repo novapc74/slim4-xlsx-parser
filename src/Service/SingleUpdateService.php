@@ -68,35 +68,25 @@ class SingleUpdateService
 
     private function createOrUpdateCompany(XlsxDto $data): void
     {
-        $companyData = $data->getCompany();
-        if ($company = AdsCampaign::findOne($companyData['id'])) {
-
-            AdsCampaign::updateCompany($companyData);
-            $this->logger->info(sprintf('Обновили компанию с ID: %s', $company->id));
-
-            return;
-        }
-
-        $newCompany = AdsCampaign::createCompany($companyData);
-
-        $this->logger->info(sprintf('Создали компанию с ID: %s', $newCompany->id));
+        $this->createOrUpdateEntity($data, AdsCampaign::class, 'getCompany', 'findOne', 'updateCompany', 'createCompany');
     }
-
 
     private function createOrUpdateGroup(XlsxDto $data): void
     {
-        $groupData = $data->getGroup();
-        if ($group = AdsAdset::findOne($groupData['id'])) {
+        $this->createOrUpdateEntity($data, AdsAdset::class, 'getGroup', 'findOne', 'updateGroup', 'createGroup');
+    }
 
-            /* для меня логичнее так: $group->update($groupData) */
-            AdsAdset::updateGroup($groupData);
-            $this->logger->info(sprintf('Обновили группу с ID: %s', $group->id));
+    private function createOrUpdateEntity(XlsxDto $data, string $modelClass, string $dataMethod, string $findMethod, string $updateMethod, string $createMethod): void
+    {
+        $entityData = $data->$dataMethod();
 
+        if ($entity = $modelClass::$findMethod($entityData['id'])) {
+            $modelClass::$updateMethod($entityData);
+            $this->logger->info(sprintf('Обновили %s с ID: %s', strtolower(class_basename($modelClass)), $entity->id));
             return;
         }
 
-        $newGroup = AdsAdset::createGroup($groupData);
-
-        $this->logger->info(sprintf('Создали группу с ID: %s', $newGroup->id));
+        $newEntity = $modelClass::$createMethod($entityData);
+        $this->logger->info(sprintf('Создали %s с ID: %s', strtolower(class_basename($modelClass)), $newEntity->id));
     }
 }
