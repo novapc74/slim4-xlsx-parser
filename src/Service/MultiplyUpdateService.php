@@ -44,9 +44,9 @@ class MultiplyUpdateService
 
             $dto = XlsxDto::init($row);
 
-            $data['ads'][$row['ID объявления']] = $dto->getAdvertisements();
-            $data['companies'][$row['ID кампании']] = $dto->getCompany();
-            $data['groups'][$row['ID группы']] = $dto->getGroup();
+            $data['ads'][] = $dto->getAdvertisements();
+            $data['companies'][] = $dto->getCompany();
+            $data['groups'][] = $dto->getGroup();
         }
 
         try {

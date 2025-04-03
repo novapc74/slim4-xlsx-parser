@@ -22,14 +22,15 @@ CREATE TABLE ads_ad_sets (
 );
 
 CREATE TABLE ads (
-    id BIGINT UNIQUE NOT NULL,
+    id BIGINT NOT NULL,
     updated_at DATETIME,
     credit FLOAT,
     name VARCHAR(255) NOT NULL,
     display_count BIGINT,
     click_count BIGINT,
     company_id bigint REFERENCES ads_campaigns (id),
-    group_id bigint REFERENCES ads_ad_sets (id)
+    group_id bigint REFERENCES ads_ad_sets (id),
+    UNIQUE (id, updated_at)
 );
 ```
 ***
