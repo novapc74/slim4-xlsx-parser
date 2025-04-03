@@ -21,6 +21,8 @@ class Ads extends Model
         'name',
         'display_count',
         'click_count',
+        'company_id',
+        'group_id',
     ];
 
     public static function findOne(int $id): Model|null
@@ -34,9 +36,17 @@ class Ads extends Model
         return self::create($data);
     }
 
-    public static function createMultiple(array $collection): bool
+    public static function updateMultiple(array $collection): bool
     {
-        return self::insert($collection);
+        return self::upsert($collection, ['id', 'updated_at'], [
+                'updated_at',
+                'credit',
+                'name',
+                'display_count',
+                'click_count',
+                'company_id',
+                'group_id'
+            ]);
     }
 
     public function updateAd(array $data): bool

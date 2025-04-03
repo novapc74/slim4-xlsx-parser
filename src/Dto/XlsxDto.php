@@ -36,7 +36,7 @@ class XlsxDto
 
         return [
             'id' => (int)$row['ID объявления'],
-            'updated_at' => $row['Дата']->format('Y-m-d'), // DatetimeImmutable
+            'updated_at' => $row['Дата']->format('Y-m-d'),
             'credit' => round($row['Расходы'], 2),
             'name' => $row['Название объявления'],
             'display_count' => $row['Показы'],

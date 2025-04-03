@@ -29,7 +29,8 @@ CREATE TABLE ads (
     display_count BIGINT,
     click_count BIGINT,
     company_id bigint REFERENCES ads_campaigns (id),
-    group_id bigint REFERENCES ads_ad_sets (id)
+    group_id bigint REFERENCES ads_ad_sets (id),
+    UNIQUE (id, updated_at)
 );
 ```
 ***

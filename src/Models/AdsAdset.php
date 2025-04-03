@@ -29,4 +29,8 @@ class AdsAdset extends Model
         return $this->update($data);
     }
 
+    public static function updateMultiple(array $collection): bool
+    {
+        return self::upsert($collection, ['id'], ['name']);
+    }
 }

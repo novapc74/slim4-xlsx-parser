@@ -14,9 +14,9 @@ class AdsCampaign extends Model
         'name',
     ];
 
-    public static function createMultiple(array $collection): bool
+    public static function updateMultiple(array $collection): bool
     {
-        return self::insert($collection);
+        return self::upsert($collection, ['id'], ['name']);
     }
 
     public static function findOne(int $id): Model|null
