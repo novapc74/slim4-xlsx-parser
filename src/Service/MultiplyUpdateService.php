@@ -12,8 +12,6 @@ use App\Request\XlsxValidator;
 
 class MultiplyUpdateService
 {
-    private ?array $error = null;
-
     public function __construct(private LoggerInterface $logger, private array $rows)
     {
     }
