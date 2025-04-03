@@ -62,4 +62,9 @@ class XlsFileManager
 
         return $response->getBody()->getContents();
     }
+
+    public static function removeTemplateFile(): void
+    {
+        unlink(self::TEMP_FILE_NAME);
+    }
 }

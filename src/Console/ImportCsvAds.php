@@ -61,6 +61,8 @@ class ImportCsvAds extends Command
         /** удаляем данные из базы, если последних нет в таблице */
         ClearOldData::init($this->logger, $rows)->clearOldData();
 
+        XlsFileManager::removeTemplateFile();
+
         return $success
             ? ($io->success('Похоже на то, что все OK!') && Command::SUCCESS)
             : ($io->error('Самое время посмотреть логи!') && Command::FAILURE);
